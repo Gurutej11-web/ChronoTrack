@@ -1,0 +1,148 @@
+/* ===========================
+   Theme & Color Modes
+   =========================== */
+
+/* Light Theme (default) */
+body {
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    
+    --border-color: #e5e7eb;
+    --border-light: #f3f4f6;
+}
+
+/* Dark Theme */
+body.dark-theme {
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #374151;
+    
+    --border-color: #374151;
+    --border-light: #1f2937;
+}
+
+/* System preference */
+@media (prefers-color-scheme: dark) {
+    body:not(.light-theme) {
+        --text-primary: #f9fafb;
+        --text-secondary: #d1d5db;
+        --text-muted: #9ca3af;
+        
+        --bg-primary: #111827;
+        --bg-secondary: #1f2937;
+        --bg-tertiary: #374151;
+        
+        --border-color: #374151;
+        --border-light: #1f2937;
+    }
+}
+
+/* Custom Accent Colors */
+body.accent-violet {
+    --primary-color: #7c3aed;
+}
+
+body.accent-blue {
+    --primary-color: #0284c7;
+}
+
+body.accent-green {
+    --primary-color: #059669;
+}
+
+body.accent-red {
+    --primary-color: #dc2626;
+}
+
+/* Color Categories */
+.category-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.category-work {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.category-personal {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.category-health {
+    background-color: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+}
+
+.category-finance {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.category-learning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.category-social {
+    background-color: rgba(6, 182, 212, 0.1);
+    color: #06b6d4;
+}
+
+/* Status Colors */
+.status-pending {
+    color: #f59e0b;
+}
+
+.status-in-progress {
+    color: #3b82f6;
+}
+
+.status-completed {
+    color: #10b981;
+}
+
+.status-overdue {
+    color: #ef4444;
+}
+
+.status-on-hold {
+    color: #8b5cf6;
+}
+
+/* Priority Colors */
+.priority-low {
+    color: #10b981;
+}
+
+.priority-medium {
+    color: #f59e0b;
+}
+
+.priority-high {
+    color: #ef4444;
+}
+
+/* Transition for theme changes */
+* {
+    transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base);
+}
+
+/* Disable transitions during theme switch */
+body.no-transitions,
+body.no-transitions * {
+    transition: none !important;
+}

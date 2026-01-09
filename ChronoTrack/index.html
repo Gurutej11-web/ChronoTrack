@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronoTrack - Personal Time & Productivity Tracker</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Authentication Screen (shown when not logged in) -->
+        <div id="auth-container" class="auth-screen">
+            <div class="auth-form-wrapper">
+                <div class="auth-header">
+                    <h1>ChronoTrack</h1>
+                    <p class="subtitle">Your Personal Operating System for Time Management</p>
+                </div>
+                
+                <div id="login-form" class="auth-form active">
+                    <h2>Welcome Back</h2>
+                    <form id="login-form-element">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                        <p class="form-toggle">
+                            Don't have an account? 
+                            <a href="#" onclick="toggleAuthForms()">Sign Up</a>
+                        </p>
+                    </form>
+                </div>
+                
+                <div id="signup-form" class="auth-form">
+                    <h2>Join ChronoTrack</h2>
+                    <form id="signup-form-element">
+                        <div class="form-group">
+                            <label for="signup-name">Display Name</label>
+                            <input type="text" id="signup-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <input type="email" id="signup-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" id="signup-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-timezone">Timezone</label>
+                            <select id="signup-timezone">
+                                <option value="UTC">UTC</option>
+                                <option value="EST">Eastern (EST)</option>
+                                <option value="CST">Central (CST)</option>
+                                <option value="MST">Mountain (MST)</option>
+                                <option value="PST">Pacific (PST)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                        <p class="form-toggle">
+                            Already have an account? 
+                            <a href="#" onclick="toggleAuthForms()">Login</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Application (shown when logged in) -->
+        <div id="main-app" class="main-app hidden">
+            <!-- Top Navigation -->
+            <nav class="top-nav">
+                <div class="nav-left">
+                    <div class="logo">ChronoTrack</div>
+                    <div class="nav-search">
+                        <input type="search" id="global-search" placeholder="Search tasks, events, notes...">
+                    </div>
+                </div>
+                <div class="nav-right">
+                    <button class="btn-icon" id="theme-toggle" title="Toggle theme">🌙</button>
+                    <button class="btn-icon" id="notifications-btn" title="Notifications">🔔</button>
+                    <div class="user-menu">
+                        <img id="user-avatar" src="" alt="User" class="avatar-small">
+                        <div class="dropdown-menu" id="user-dropdown">
+                            <a href="#" onclick="goToProfile()">Profile Settings</a>
+                            <a href="#" onclick="goToPreferences()">Preferences</a>
+                            <hr>
+                            <a href="#" onclick="logout()">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar">
+                <div class="nav-section">
+                    <h3>Core</h3>
+                    <nav class="nav-menu">
+                        <a href="#" onclick="navigateTo('dashboard')" class="nav-item active">
+                            📊 Dashboard
+                        </a>
+                        <a href="#" onclick="navigateTo('calendar')" class="nav-item">
+                            📅 Calendar
+                        </a>
+                        <a href="#" onclick="navigateTo('tasks')" class="nav-item">
+                            ✓ Tasks
+                        </a>
+                    </nav>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>Tracking</h3>
+                    <nav class="nav-menu">
+                        <a href="#" onclick="navigateTo('goals')" class="nav-item">
+                            🎯 Goals
+                        </a>
+                        <a href="#" onclick="navigateTo('habits')" class="nav-item">
+                            🔄 Habits
+                        </a>
+                        <a href="#" onclick="navigateTo('notes')" class="nav-item">
+                            📝 Notes
+                        </a>
+                    </nav>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>Personal</h3>
+                    <nav class="nav-menu">
+                        <a href="#" onclick="navigateTo('expenses')" class="nav-item">
+                            💰 Expenses
+                        </a>
+                        <a href="#" onclick="navigateTo('time-tracking')" class="nav-item">
+                            ⏱️ Time Tracking
+                        </a>
+                        <a href="#" onclick="navigateTo('analytics')" class="nav-item">
+                            📈 Analytics
+                        </a>
+                    </nav>
+                </div>
+            </aside>
+            
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page-container">
+                    <div class="page-header">
+                        <h1>Dashboard</h1>
+                        <p class="current-date" id="current-date-display"></p>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <!-- Quick Stats -->
+                        <section class="widget widget-stats">
+                            <h2>Today's Overview</h2>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <span class="stat-label">Tasks Today</span>
+                                    <span class="stat-value" id="today-tasks">0</span>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-label">Completed</span>
+                                    <span class="stat-value" id="completed-tasks">0</span>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-label">Habits Done</span>
+                                    <span class="stat-value" id="habits-completed">0</span>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-label">Streak</span>
+                                    <span class="stat-value" id="current-streak">0</span>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Today's Schedule -->
+                        <section class="widget widget-schedule">
+                            <h2>Today's Events</h2>
+                            <div id="today-events-list" class="events-list">
+                                <p class="empty-state">No events scheduled</p>
+                            </div>
+                        </section>
+                        
+                        <!-- Active Goals -->
+                        <section class="widget widget-goals">
+                            <h2>Active Goals</h2>
+                            <div id="active-goals-list" class="goals-list">
+                                <p class="empty-state">No active goals</p>
+                            </div>
+                        </section>
+                        
+                        <!-- Habit Tracker -->
+                        <section class="widget widget-habits">
+                            <h2>Today's Habits</h2>
+                            <div id="today-habits-list" class="habits-list">
+                                <p class="empty-state">No habits set up</p>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                
+                <!-- Calendar Page -->
+                <div id="calendar-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Calendar</h1>
+                        <div class="calendar-controls">
+                            <button class="btn" onclick="previousMonth()">← Previous</button>
+                            <span id="calendar-month-year"></span>
+                            <button class="btn" onclick="nextMonth()">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <div class="calendar-container">
+                        <div id="calendar-grid" class="calendar-grid">
+                            <!-- Calendar will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tasks Page -->
+                <div id="tasks-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Tasks</h1>
+                        <div class="tasks-controls">
+                            <input type="search" id="task-search" placeholder="Search tasks...">
+                            <button class="btn btn-primary" onclick="createTask()">+ New Task</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tasks-view-toggle">
+                        <button class="view-btn active" onclick="setTaskView('list', this)">List</button>
+                        <button class="view-btn" onclick="setTaskView('board', this)">Board</button>
+                    </div>
+                    
+                    <div id="tasks-list-view" class="tasks-container">
+                        <div id="task-list" class="task-list">
+                            <p class="empty-state">No tasks yet</p>
+                        </div>
+                    </div>
+                    
+                    <div id="tasks-board-view" class="tasks-board hidden">
+                        <!-- Kanban board columns will be rendered here -->
+                    </div>
+                </div>
+                
+                <!-- Goals Page -->
+                <div id="goals-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Goals</h1>
+                        <button class="btn btn-primary" onclick="createGoal()">+ New Goal</button>
+                    </div>
+                    
+                    <div class="goals-container">
+                        <div id="short-term-goals" class="goals-section">
+                            <h2>Short-term Goals</h2>
+                            <div id="short-goals-list" class="goals-list">
+                                <p class="empty-state">No short-term goals</p>
+                            </div>
+                        </div>
+                        
+                        <div id="long-term-goals" class="goals-section">
+                            <h2>Long-term Goals</h2>
+                            <div id="long-goals-list" class="goals-list">
+                                <p class="empty-state">No long-term goals</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Habits Page -->
+                <div id="habits-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Habit Tracker</h1>
+                        <button class="btn btn-primary" onclick="createHabit()">+ New Habit</button>
+                    </div>
+                    
+                    <div class="habits-container">
+                        <div id="habits-list" class="habits-list">
+                            <p class="empty-state">No habits yet</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notes Page -->
+                <div id="notes-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Notes & Journal</h1>
+                        <button class="btn btn-primary" onclick="NotesModule.openCreateModal()">+ New Note</button>
+                    </div>
+                    
+                    <div id="notes-list" class="notes-list">
+                        <p class="empty-state">No notes yet</p>
+                    </div>
+                </div>
+                
+                <!-- Expenses Page -->
+                <div id="expenses-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Expense Tracker</h1>
+                        <button class="btn btn-primary" onclick="addExpense()">+ New Expense</button>
+                    </div>
+                    
+                    <div class="expenses-container">
+                        <div id="expenses-list" class="expenses-list">
+                            <p class="empty-state">No expenses recorded</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Time Tracking Page -->
+                <div id="time-tracking-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Time Tracking</h1>
+                        <button class="btn btn-primary" onclick="startTimeTracking()">+ Log Time</button>
+                    </div>
+                    
+                    <div class="time-tracking-container">
+                        <div id="time-tracking-list" class="tracking-list">
+                            <p class="empty-state">No time logs yet</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analytics Page -->
+                <div id="analytics-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Analytics & Insights</h1>
+                    </div>
+                    
+                    <div class="analytics-container">
+                        <section class="widget widget-chart">
+                            <h2>Task Completion Rate</h2>
+                            <canvas id="task-completion-chart"></canvas>
+                        </section>
+                        
+                        <section class="widget widget-chart">
+                            <h2>Habit Consistency</h2>
+                            <canvas id="habit-chart"></canvas>
+                        </section>
+                        
+                        <section class="widget widget-chart">
+                            <h2>Time Usage</h2>
+                            <canvas id="time-usage-chart"></canvas>
+                        </section>
+                        
+                        <section class="widget widget-chart">
+                            <h2>Goal Progress</h2>
+                            <canvas id="goal-progress-chart"></canvas>
+                        </section>
+                    </div>
+                <!-- Profile Page -->
+                <div id="profile-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Profile Settings</h1>
+                    </div>
+                    
+                    <div class="settings-container">
+                        <div class="widget" style="max-width: 600px;">
+                            <h2>User Profile</h2>
+                            <div style="margin-top: 20px;">
+                                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
+                                    <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; font-weight: bold;" id="profile-avatar">U</div>
+                                    <div>
+                                        <p style="margin: 0; font-size: 14px; color: var(--text-secondary);">Email</p>
+                                        <p style="margin: 8px 0 0 0; font-size: 16px; font-weight: 500;" id="profile-email">user@example.com</p>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Display Name</label>
+                                    <input type="text" id="profile-name" placeholder="Your name" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary);" value="User">
+                                </div>
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Bio</label>
+                                    <textarea id="profile-bio" placeholder="Tell us about yourself" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary); min-height: 100px; resize: vertical;"></textarea>
+                                </div>
+                                
+                                <button class="btn btn-primary" onclick="saveProfileSettings()">Save Changes</button>
+                            </div>
+                        </div>
+                        
+                        <div class="widget" style="max-width: 600px; margin-top: 20px;">
+                            <h2>Security</h2>
+                            <div style="margin-top: 20px;">
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Current Password</label>
+                                    <input type="password" placeholder="Enter current password" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary);">
+                                </div>
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">New Password</label>
+                                    <input type="password" placeholder="Enter new password" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary);">
+                                </div>
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Confirm New Password</label>
+                                    <input type="password" placeholder="Confirm new password" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary);">
+                                </div>
+                                
+                                <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Preferences Page -->
+                <div id="preferences-page" class="page-container hidden">
+                    <div class="page-header">
+                        <h1>Preferences</h1>
+                    </div>
+                    
+                    <div class="settings-container">
+                        <div class="widget" style="max-width: 600px;">
+                            <h2>Display Settings</h2>
+                            <div style="margin-top: 20px;">
+                                <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <p style="margin: 0; font-weight: 500;">Dark Mode</p>
+                                        <p style="margin: 4px 0 0 0; font-size: 14px; color: var(--text-secondary);">Toggle dark/light theme</p>
+                                    </div>
+                                    <button class="btn btn-small" onclick="toggleTheme()">Toggle</button>
+                                </div>
+                                
+                                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 20px 0;">
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Date Format</label>
+                                    <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary);">
+                                        <option>MM/DD/YYYY</option>
+                                        <option>DD/MM/YYYY</option>
+                                        <option>YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Time Format</label>
+                                    <select style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-secondary); color: var(--text-primary);">
+                                        <option>12-Hour (AM/PM)</option>
+                                        <option>24-Hour</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="widget" style="max-width: 600px; margin-top: 20px;">
+                            <h2>Notification Settings</h2>
+                            <div style="margin-top: 20px;">
+                                <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <p style="margin: 0; font-weight: 500;">Task Reminders</p>
+                                        <p style="margin: 4px 0 0 0; font-size: 14px; color: var(--text-secondary);">Get notified before tasks are due</p>
+                                    </div>
+                                    <input type="checkbox" style="width: 20px; height: 20px;" checked>
+                                </div>
+                                
+                                <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <p style="margin: 0; font-weight: 500;">Habit Reminders</p>
+                                        <p style="margin: 4px 0 0 0; font-size: 14px; color: var(--text-secondary);">Daily habit tracking reminders</p>
+                                    </div>
+                                    <input type="checkbox" style="width: 20px; height: 20px;" checked>
+                                </div>
+                                
+                                <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <p style="margin: 0; font-weight: 500;">Goal Updates</p>
+                                        <p style="margin: 4px 0 0 0; font-size: 14px; color: var(--text-secondary);">Milestone and goal notifications</p>
+                                    </div>
+                                    <input type="checkbox" style="width: 20px; height: 20px;" checked>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="widget" style="max-width: 600px; margin-top: 20px;">
+                            <h2>Data & Privacy</h2>
+                            <div style="margin-top: 20px;">
+                                <div style="margin-bottom: 20px;">
+                                    <p style="margin: 0 0 10px 0; color: var(--text-secondary);">Export your data as JSON or delete your account</p>
+                                    <button class="btn btn-small" onclick="exportData()" style="margin-right: 10px;">Export Data</button>
+                                    <button class="btn btn-small btn-danger" onclick="deleteAccount()">Delete Account</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </main>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <!-- Create Task Modal -->
+    <div id="create-task-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Create New Task</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('create-task-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="create-task-form">
+                <div class="form-group">
+                    <label for="task-title">Title *</label>
+                    <input type="text" id="task-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Description</label>
+                    <textarea id="task-description" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-priority">Priority</label>
+                        <select id="task-priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-category">Category</label>
+                        <select id="task-category">
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="health">Health</option>
+                            <option value="learning">Learning</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="task-due-date">Due Date</label>
+                    <input type="date" id="task-due-date">
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="UIHelpers.closeModal('create-task-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="document.getElementById('create-task-form').dispatchEvent(new Event('submit'))">Create Task</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Event Modal -->
+    <div id="create-event-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Create New Event</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('create-event-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="create-event-form">
+                    <div class="form-group">
+                        <label for="event-title">Title *</label>
+                        <input type="text" id="event-title" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="display: none;">
+                            <label for="event-date">Date</label>
+                            <input type="date" id="event-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="event-time">Time</label>
+                            <input type="time" id="event-time">
+                        </div>
+                        <div class="form-group">
+                            <label for="event-priority">Priority</label>
+                            <select id="event-priority">
+                                <option value="normal" selected>Normal</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-category">Category</label>
+                        <select id="event-category">
+                            <option value="meeting">Meeting</option>
+                            <option value="appointment">Appointment</option>
+                            <option value="reminder">Reminder</option>
+                            <option value="personal">Personal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-description">Description</label>
+                        <textarea id="event-description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="UIHelpers.closeModal('create-event-modal')">Cancel</button>
+                <button id="create-event-submit" type="submit" form="create-event-form" class="btn btn-primary">Create Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div id="event-detail-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="event-detail-title">Event</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('event-detail-modal')">&times;</button>
+            </div>
+            <div class="modal-body" id="event-detail-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="UIHelpers.closeModal('event-detail-modal')">Close</button>
+                <button class="btn btn-primary" id="event-detail-edit-btn">Edit</button>
+                <button class="btn btn-danger" id="event-detail-delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day View Modal -->
+    <div id="day-view-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="day-view-title">Events</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('day-view-modal')">&times;</button>
+            </div>
+            <div class="modal-body" id="day-view-events"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="UIHelpers.closeModal('day-view-modal')">Close</button>
+                <button class="btn btn-primary" onclick="CalendarModule.createEventForSelectedDate()">+ Add Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Note Modal -->
+    <div id="create-note-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Create New Note</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('create-note-modal')">&times;</button>
+            </div>
+            <form id="create-note-form" style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                <div class="form-group" style="margin: 0;">
+                    <label for="new-note-title">Note Title</label>
+                    <input type="text" id="new-note-title" placeholder="Enter note title...">
+                </div>
+                <div class="form-group" style="margin: 0; flex: 1;">
+                    <label for="new-note-content">Content</label>
+                    <textarea id="new-note-content" placeholder="Write your note here..." style="min-height: 200px; resize: vertical;"></textarea>
+                </div>
+                <div class="form-group" style="margin: 0;">
+                    <label for="new-note-tags">Tags (comma-separated)</label>
+                    <input type="text" id="new-note-tags" placeholder="Add tags...">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="UIHelpers.closeModal('create-note-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Note Detail Modal -->
+    <div id="note-detail-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="note-detail-title">Note</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('note-detail-modal')">&times;</button>
+            </div>
+            <div style="padding: var(--spacing-lg); flex: 1; display: flex; flex-direction: column;">
+                <input type="text" id="note-detail-title-edit" placeholder="Note Title" style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--spacing-md); border: 1px solid var(--border-color); padding: var(--spacing-sm); border-radius: var(--radius-md); background: var(--bg-secondary); color: var(--text-primary);">
+                <textarea id="note-detail-content-edit" placeholder="Note content..." style="flex: 1; min-height: 200px; border: 1px solid var(--border-color); padding: var(--spacing-md); border-radius: var(--radius-md); background: var(--bg-secondary); color: var(--text-primary); resize: none;"></textarea>
+                <input type="text" id="note-detail-tags-edit" placeholder="Tags (comma-separated)" style="margin-top: var(--spacing-md); border: 1px solid var(--border-color); padding: var(--spacing-sm); border-radius: var(--radius-md); background: var(--bg-secondary); color: var(--text-primary);">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="UIHelpers.closeModal('note-detail-modal')">Close</button>
+                <button class="btn btn-danger" onclick="NotesModule.deleteCurrentNote()">Delete</button>
+                <button class="btn btn-primary" onclick="NotesModule.saveCurrentNote()">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Goal Modal -->
+    <div id="create-goal-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Create New Goal</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('create-goal-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="create-goal-form">
+                <div class="form-group">
+                    <label for="goal-title">Title *</label>
+                    <input type="text" id="goal-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="goal-description">Description</label>
+                    <textarea id="goal-description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="goal-target-date">Target Date</label>
+                    <input type="date" id="goal-target-date">
+                </div>
+                <div class="form-group">
+                    <label>Milestones (one per line)</label>
+                    <textarea id="goal-milestones" rows="4" placeholder="Enter milestones, one per line"></textarea>
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="UIHelpers.closeModal('create-goal-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="document.getElementById('create-goal-form').dispatchEvent(new Event('submit'))">Create Goal</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Habit Modal -->
+    <div id="create-habit-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Create New Habit</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('create-habit-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="create-habit-form">
+                <div class="form-group">
+                    <label for="habit-title">Title *</label>
+                    <input type="text" id="habit-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="habit-frequency">Frequency</label>
+                    <select id="habit-frequency">
+                        <option value="daily" selected>Daily</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="habit-category">Category</label>
+                    <select id="habit-category">
+                        <option value="health">Health</option>
+                        <option value="productivity">Productivity</option>
+                        <option value="learning">Learning</option>
+                        <option value="mindfulness">Mindfulness</option>
+                    </select>
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="UIHelpers.closeModal('create-habit-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="document.getElementById('create-habit-form').dispatchEvent(new Event('submit'))">Create Habit</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Expense Modal -->
+    <div id="add-expense-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Add Expense</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('add-expense-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-expense-form">
+                <div class="form-group">
+                    <label for="expense-description">Description *</label>
+                    <input type="text" id="expense-description" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expense-amount">Amount *</label>
+                        <input type="number" id="expense-amount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-category">Category</label>
+                        <select id="expense-category">
+                            <option value="food">Food</option>
+                            <option value="transport">Transport</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="health">Health</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="expense-date">Date *</label>
+                    <input type="date" id="expense-date" required>
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="UIHelpers.closeModal('add-expense-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="document.getElementById('add-expense-form').dispatchEvent(new Event('submit'))">Add Expense</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Log Time Modal -->
+    <div id="log-time-modal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Log Time</h2>
+                <button class="modal-close" onclick="UIHelpers.closeModal('log-time-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="log-time-form">
+                <div class="form-group">
+                    <label for="time-task">Task/Project *</label>
+                    <input type="text" id="time-task" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="time-hours">Hours *</label>
+                        <input type="number" id="time-hours" min="0" max="23" value="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time-minutes">Minutes *</label>
+                        <input type="number" id="time-minutes" min="0" max="59" value="0" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="time-date">Date *</label>
+                    <input type="date" id="time-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="time-notes">Notes</label>
+                    <textarea id="time-notes" rows="3"></textarea>
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="UIHelpers.closeModal('log-time-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="document.getElementById('log-time-form').dispatchEvent(new Event('submit'))">Log Time</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="js/utils/date-utils.js"></script>
+    <script src="js/utils/state-manager.js"></script>
+    <script src="js/utils/ui-helpers.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/modules/dashboard.js"></script>
+    <script src="js/modules/calendar.js"></script>
+    <script src="js/modules/tasks.js"></script>
+    <script src="js/modules/goals.js"></script>
+    <script src="js/modules/habits.js"></script>
+    <script src="js/modules/notes.js"></script>
+    <script src="js/modules/expenses.js"></script>
+    <script src="js/modules/time-tracking.js"></script>
+    <script src="js/modules/analytics.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
