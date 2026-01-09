@@ -1,0 +1,12 @@
+{
+  "hosting": {
+    "site": "chronotrack-c5c02",
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true
+  }
+}
